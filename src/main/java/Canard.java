@@ -28,6 +28,8 @@ public abstract class Canard {
     private TypeCanard.typeCanard type;
     private boolean capaciteSpecialeUtilisee = false; // Pour s'assurer que la capacité spéciale n'est utilisée qu'une
                                                       // seule fois par combat
+    private int pointsEnergie = 50;
+
 
     /**
      * Constructreur
@@ -72,6 +74,15 @@ public abstract class Canard {
         this.pointsAttaque = pointsAttaque;
     }
 
+    public int getPointsEnergie() {
+        return pointsEnergie;
+    }
+
+    public void setPointsEnergie(int pointsEnergie) {
+        this.pointsEnergie = pointsEnergie;
+    }
+
+
     /**
      * attaquer(Canard autreCanard) : Permet à un canard d'attaquer un autre
      * canard.
@@ -82,10 +93,22 @@ public abstract class Canard {
      * @param autreCanard : Canard attaqué
      */
     public void attaquer(Canard autreCanard) {
-        int degatsInfliges = (int) (this.pointsAttaque
-                * TypeCanard.getMultiplicateur(this.type, autreCanard.getType()));
-        autreCanard.subirDegats(degatsInfliges);
+    int coutAttaque = 5;
+    if (!consommerPE(coutAttaque)) return;
+
+    double multiplicateurType = TypeCanard.getMultiplicateur(this.type, autreCanard.getType());
+
+    // 10% de chance critique
+    boolean critique = Math.random() < 0.10;
+    double multiplicateurCritique = critique ? 2.0 : 1.0;
+
+    int degats = (int) (this.pointsAttaque * multiplicateurType * multiplicateurCritique);
+    autreCanard.subirDegats(degats);
+
+    System.out.println(getNom() + " attaque " + autreCanard.getNom() + 
+        (critique ? " avec un COUP CRITIQUE !" : "") + " (-" + degats + " PV)");
     }
+
 
     /**
      * subirDegats(int degats) : Réduit les points de vie du canard en fonction
@@ -134,4 +157,18 @@ public abstract class Canard {
      * chaque sous-classe pour définir le comportement de la capacité spéciale.
      */
     public abstract void activerCapaciteSpeciale();
+
+    /**
+     * Consomme un certain nombre de points d'énergie. Retourne true si suffisant.
+     */
+    public boolean consommerPE(int cout) {
+        if (pointsEnergie >= cout) {
+            pointsEnergie -= cout;
+            return true;
+    } else {
+        System.out.println(getNom() + " n’a pas assez de PE !");
+        return false;
+    }
+}
+
 }
