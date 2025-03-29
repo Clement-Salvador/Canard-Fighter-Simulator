@@ -26,6 +26,8 @@ public abstract class Canard {
     private int pointsDeVie;
     private int pointsAttaque;
     private TypeCanard.typeCanard type;
+    private boolean capaciteSpecialeUtilisee = false; // Pour s'assurer que la capacité spéciale n'est utilisée qu'une
+                                                      // seule fois par combat
 
     /**
      * Constructreur
@@ -110,4 +112,26 @@ public abstract class Canard {
         return this.pointsDeVie <= 0;
     }
 
+    /**
+     * Vérifie si la capacité spéciale a déjà été utilisée durant le combat.
+     * 
+     * @return true si la capacité spéciale a été activée, sinon false.
+     */
+    public boolean isCapaciteSpecialeUtilisee() {
+        return this.capaciteSpecialeUtilisee;
+    }
+
+    /**
+     * Marque la capacité spéciale comme utilisée.
+     */
+
+    protected void markCapaciteSpecialeAsUsed() {
+        this.capaciteSpecialeUtilisee = true;
+    }
+
+    /**
+     * activerCapaciteSpeciale() : Méthode abstraite qui devra être implémentée par
+     * chaque sous-classe pour définir le comportement de la capacité spéciale.
+     */
+    public abstract void activerCapaciteSpeciale();
 }
