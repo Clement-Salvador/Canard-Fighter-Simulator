@@ -63,9 +63,10 @@ public class CanardTest {
 
     @Test
     public void testCapaciteSpecialeCanardFeu() {
-        canardFeu.activerCapaciteSpeciale(canardEau); // Active la brûlure
+        canardFeu.activerCapaciteSpeciale(canardEau);
+         // Active la brûlure
         canardFeu.attaquer(canardEau); // Applique la brûlure
-        assertEquals(80, canardEau.getPointsDeVie()); // 100 - (20 * 1.0) = 80
+        assertEquals(80, canardEau.getPointsDeVie()); // 100 - (20 * 0,5+10 brûlure) = 80
     }
 
     // ------------------------------------------
@@ -73,8 +74,8 @@ public class CanardTest {
     // ------------------------------------------
     @Test
     public void testVentContreGlace() {
-        canardVent.attaquer(canardGlace); // Vent > Glace (x1.5)
-        assertEquals(70, canardGlace.getPointsDeVie()); // 100 - (20 * 1.5) = 70
+        canardVent.attaquer(canardGlace); // Vent < Glace (x0.5)
+        assertEquals(90, canardGlace.getPointsDeVie()); // 100 - (20 * 0.5) = 90
     }
 
     @Test
