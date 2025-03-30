@@ -13,7 +13,7 @@
  */
 public class CanardGlace extends Canard {
 
-    private boolean cibleGelee = false;
+    private Canard cibleGelee = null;
 
     public CanardGlace(String nom, int pointsDeVie, int pointsAttaque) {
         super(nom, pointsDeVie, pointsAttaque, TypeCanard.typeCanard.CanardGlace);
@@ -24,10 +24,10 @@ public class CanardGlace extends Canard {
      * Gèle l'adversaire pendant un tour.
      */
     @Override
-    public void activerCapaciteSpeciale() {
+    public void activerCapaciteSpeciale(Canard cible) {
         if (!isCapaciteSpecialeUtilisee()) {
-            System.out.println(getNom() + " utilise Souffle gelé !");
-            cibleGelee = true;
+            System.out.println(getNom() + " utilise Souffle gelé sur " + cible.getNom() + " !");
+            cibleGelee = cible;
             markCapaciteSpecialeAsUsed();
         } else {
             System.out.println(getNom() + " a déjà utilisé sa capacité spéciale !");
@@ -39,9 +39,11 @@ public class CanardGlace extends Canard {
      * 
      * @return true si la cible est gelée, sinon false.
      */
-    public boolean isCibleGelee() {
-        boolean result = cibleGelee;
-        cibleGelee = false; // effet pour un tour seulement
-        return result;
+    public boolean estCibleGelee(Canard cible) {
+        if (cibleGelee == cible) {
+            cibleGelee = null;
+            return true;
+        }
+        return false;
     }
 }
