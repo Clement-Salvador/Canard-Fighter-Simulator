@@ -1,7 +1,17 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Classe principale de l'application Canard Fighter Simulator.
+ * Gère la création de canards, le lancement de combats, et l'interaction
+ * utilisateur via console.
+ */
 public class Main {
+
+    /**
+     * Point d'entrée du programme.
+     * Affiche un menu et gère les choix utilisateur.
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<Canard> canards = new ArrayList<>();
@@ -42,6 +52,12 @@ public class Main {
         }
     }
 
+    /**
+     * Crée un canard à partir des choix utilisateur.
+     * 
+     * @param scanner Scanner pour lire les entrées.
+     * @return Un objet Canard instancié selon le type.
+     */
     public static Canard creerCanard(Scanner scanner) {
         System.out.print("Nom du canard : ");
         String nom = scanner.nextLine();
@@ -62,7 +78,7 @@ public class Main {
 
         switch (type) {
             case 1:
-                return new CanardEau(nom, pv, pa, TypeCanard.typeCanard.CanardEau);
+                return new CanardEau(nom, pv, pa);
             case 2:
                 return new CanardFeu(nom, pv, pa);
             case 3:
@@ -75,6 +91,13 @@ public class Main {
         }
     }
 
+    /**
+     * Lance un combat entre deux canards.
+     * 
+     * @param c1      Premier canard.
+     * @param c2      Deuxième canard.
+     * @param scanner Scanner pour l'interaction utilisateur.
+     */
     public static void lancerCombat(Canard c1, Canard c2, Scanner scanner) {
         int tour = 1;
         System.out.println("\n=== Début du combat : " + c1.getNom() + " VS " + c2.getNom() + " ===");
@@ -82,17 +105,16 @@ public class Main {
         while (!c1.estKO() && !c2.estKO()) {
             System.out.println("\n--- Tour " + tour + " ---");
 
-            // Tour du canard 1
-            if (!(c1 instanceof CanardGlace) || !((CanardGlace) c1).isCibleGelee()) {
+            if (!(c2 instanceof CanardGlace) || !((CanardGlace) c2).estCibleGelee(c1)) {
                 tourCanard(c1, c2, scanner);
             } else {
                 System.out.println(c1.getNom() + " est gelé et perd son tour !");
             }
 
-            if (c2.estKO()) break;
+            if (c2.estKO())
+                break;
 
-            // Tour du canard 2
-            if (!(c2 instanceof CanardGlace) || !((CanardGlace) c2).isCibleGelee()) {
+            if (!(c1 instanceof CanardGlace) || !((CanardGlace) c1).estCibleGelee(c2)) {
                 tourCanard(c2, c1, scanner);
             } else {
                 System.out.println(c2.getNom() + " est gelé et perd son tour !");
@@ -110,33 +132,52 @@ public class Main {
         }
     }
 
+    /**
+     * Gère le tour d’un canard (attaque ou capacité spéciale).
+     * 
+     * @param attaquant Le canard qui joue.
+     * @param defenseur Le canard ciblé.
+     * @param scanner   Pour les entrées utilisateur.
+     */
     public static void tourCanard(Canard attaquant, Canard defenseur, Scanner scanner) {
         System.out.println("\n" + attaquant.getNom() + " (" + attaquant.getType() + ") - Que veux-tu faire ?");
-        System.out.println("1. Attaquer");
-        System.out.println("2. Utiliser capacité spéciale");
+        System.out.println("1. Attaquer (-5 PE)");
+        System.out.println("2. Utiliser capacité spéciale (-10 PE)");
         System.out.print("Choix : ");
         int choix = scanner.nextInt();
         scanner.nextLine();
 
         switch (choix) {
             case 1:
-                attaquant.attaquer(defenseur);
-                if (attaquant instanceof CanardFeu) {
-                    ((CanardFeu) attaquant).appliquerEffetBrulure(defenseur);
+                if (attaquant.consommerPE(5)) {
+                    attaquant.attaquer(defenseur);
+                    if (attaquant instanceof CanardFeu) {
+                        ((CanardFeu) attaquant).appliquerEffetBrulure(defenseur);
+                    }
                 }
                 break;
             case 2:
-                attaquant.activerCapaciteSpeciale();
+                if (attaquant.consommerPE(10)) {
+                    attaquant.activerCapaciteSpeciale(defenseur);
+                }
                 break;
             default:
                 System.out.println("Action invalide. Attaque par défaut.");
-                attaquant.attaquer(defenseur);
+                if (attaquant.consommerPE(5)) {
+                    attaquant.attaquer(defenseur);
+                }
         }
     }
 
+    /**
+     * Affiche les PV restants des deux canards.
+     * 
+     * @param c1 Le premier canard.
+     * @param c2 Le second canard.
+     */
     public static void afficherPV(Canard c1, Canard c2) {
         System.out.println("\nÉtat du combat :");
-        System.out.println(c1.getNom() + " : " + c1.getPointsDeVie() + " PV");
-        System.out.println(c2.getNom() + " : " + c2.getPointsDeVie() + " PV");
+        System.out.println(c1.getNom() + " : " + c1.getPointsDeVie() + " PV | " + c1.getPointsEnergie() + " PE");
+        System.out.println(c2.getNom() + " : " + c2.getPointsDeVie() + " PV | " + c2.getPointsEnergie() + " PE");
     }
 }
