@@ -1,149 +1,91 @@
 # Canard Fighter Simulator
 
-Ce projet a pour objectif de mettre en pratique des concepts avancés de programmation orientée objet en développant un simulateur de combat mettant en scène des canards légendaires aux types et capacités variés. Ce fichier readme sera emmené à disparaître dans le cadre du livrable.
+Canard Fighter Simulator est un mini-projet développé en Java permettant de simuler des combats entre canards de différents types (Feu, Eau, Glace, Vent). Chaque canard possède ses propres points de vie, points d’attaque, une capacité spéciale, ainsi qu’un système de points d’énergie (PE).
 
 ---
 
-## Objectifs
+## Choix techniques et justifications
 
-- Implémenter un simulateur de combat pour explorer des concepts avancés de la programmation orientée objet.
-- Comprendre et utiliser l’héritage, le polymorphisme et la liaison dynamique.
-- Développer une application modulaire et extensible en Java.
+**Effets de Statut :**  
+Les effets de statut (brûlure, gel) ont été intégrés pour simuler des altérations temporaires classiques dans les jeux de combat ou RPG. Chaque effet a une durée d’un tour. 
 
----
+Il était demandé d'intégrer des effets de statuts qui entraient en contradiction avec les effets des canards. Nous n'avons donc pas modifié la logique des attaques spéciales.
 
-## Introduction
+**Points d’Énergie (PE) :**  
+Chaque canard commence avec 50 points d’énergie.  
+Les actions consomment de l’énergie :
+- Une attaque normale coûte 5 PE.
+- Une capacité spéciale coûte 15 PE.
 
-Dans ce projet, vous créerez un jeu de combat mettant en scène des canards dotés de différents types (Eau, Feu, Glace, Vent) et capacités spéciales. Chaque canard possède un nom, des points de vie (PV), des points d’attaque (PA) et une capacité spéciale activable une fois par bataille.
-
-### Spécifications de Base
-
-- **Attributs du canard :**
-  - Nom
-  - Type (Eau, Feu, Glace, Vent)
-  - Points de Vie (PV)
-  - Points d’Attaque (PA)
-  - Capacité spéciale
-
-- **Relations de forces et faiblesses :**
-  - Eau > Feu
-  - Feu > Glace
-  - Glace > Vent
-  - Vent > Eau
-
-Les dégâts infligés lors des attaques sont calculés en tenant compte de ces forces et faiblesses.
+**Attaques Critiques :**  
+À chaque attaque, il y a 10 % de chances que celle-ci soit critique. Une attaque critique inflige deux fois plus de dégâts.  
 
 ---
 
-## Instructions du Projet
+## Réponses aux questions de modélisation
 
-### Étape 1 : Modélisation des Classes
+1. **Quelles classes pourraient être abstraites ?**  
+La classe `Canard` doit être abstraite, car elle représente un concept générique de canard. Elle ne doit pas être instanciée directement, mais uniquement via des sous-classes concrètes (`CanardFeu`, `CanardEau`, etc.) qui définissent les comportements spécifiques.
 
-1. Créer une classe de base `Canard` avec les accesseurs suivants :
-   - `String getNom()`
-   - `int getPointsDeVie()`
-   - `int getPointsAttaque()`
-   - `TypeCanard getType()`
+2. **Quels comportements communs pourraient être définis dans une interface ?**  
+Les effets de statut pourraient être gérés à travers une interface commune, par exemple `EffetStatut`, avec des méthodes comme `appliquerEffet(Canard cible)` ou `estActif()`.  
+De même, une interface `CapaciteSpeciale` pourrait définir un contrat standard pour toute capacité (coût en PE, activation, effet).
 
-2. Ajouter les méthodes suivantes :
-   - `attaquer(Canard autreCanard)` : inflige des dégâts en fonction du type.
-   - `subirDegats(int degats)` : réduit les PV du canard.
-   - `boolean estKO()` : retourne vrai si le canard est hors combat (PV ≤ 0).
+3. **Comment représenter un changement de statut (par exemple, brûlé ou paralysé) dans la modélisation ?**  
+Une bonne approche consiste à créer une classe `Effet` ou une hiérarchie de classes (`EffetBrulure`, `EffetGel`, etc.), qu’on associerait dynamiquement à un canard.  
+Chaque canard aurait alors une liste ou un attribut représentant ses statuts actifs, avec des méthodes pour appliquer, vérifier ou supprimer ces effets à chaque tour.
 
-3. Implémenter des classes filles :
-   - `CanardEau`
-   - `CanardFeu`
-   - `CanardGlace`
-   - `CanardVent`
+4. **Quels seraient les avantages d’utiliser une classe ou une interface supplémentaire pour gérer les capacités spéciales ?**  
+Cela permettrait de séparer la logique métier (le comportement d’une capacité) de la structure des canards. On pourrait facilement ajouter de nouvelles capacités, les réutiliser entre types, ou même permettre à un canard de changer de capacité.  
+C’est aussi plus conforme aux principes SOLID, notamment celui de la responsabilité unique et celui de l’extension ouverte.
 
-Chaque classe fille pourra redéfinir la capacité spéciale via une méthode `activerCapaciteSpeciale()`.
-
-### Étape 2 : Gestion des Forces/Faiblesses
-
-1. Définir un `enum TypeCanard` pour représenter les différents types.
-2. Implémenter une méthode statique dans `TypeCanard` :
-   - `double getMultiplicateur(TypeCanard attaquant, TypeCanard cible)` qui retourne :
-     - `1.5` si l'attaque est efficace (forte),
-     - `0.5` si l'attaque est désavantagée (faible),
-     - `1.0` en cas de neutralité.
-3. Modifier la méthode `attaquer` pour intégrer ce multiplicateur.
-
-### Étape 3 : Interface Utilisateur Minimaliste
-
-1. Créer une classe `Main` qui :
-   - Utilise un `Scanner` pour permettre à l’utilisateur de créer des canards.
-   - Affiche un menu proposant les options suivantes :
-     - Créer des canards.
-     - Lancer une bataille.
-     - Quitter.
-2. Permettre la simulation d’un combat tour par tour entre deux canards.
-
-### Étape 4 : Tests Unitaires
-
-- Ajouter des tests unitaires pour vérifier les interactions entre les différents types et pour tester les méthodes principales de la classe `Canard`.
+5. **Quels défis sont associés à l’extensibilité de votre modèle pour ajouter de nouveaux types de canards ou de nouvelles capacités ?**  
+Si les effets, types, et capacités sont codés en dur dans les classes, cela devient vite difficile à maintenir.  
+Chaque ajout nécessiterait une nouvelle sous-classe, des modifications dans les comparaisons de types, etc.  
+Pour mieux évoluer, il faudrait isoler les règles dans des systèmes modulaires (ex: map de multiplicateurs, classes `Capacite`, etc.).  
+Cela éviterait une explosion du nombre de classes ou de conditions.
 
 ---
 
-## Questionnements sur la Modélisation
+## Description des choix techniques réalisés
 
-1. Quelles classes pourraient être abstraites ?
-2. Quels comportements communs pourraient être définis dans une interface ?
-3. Comment représenter un changement de statut (par exemple, brûlé ou paralysé) dans la modélisation ?
-4. Quels seraient les avantages d’utiliser une classe ou une interface supplémentaire pour gérer les capacités spéciales ?
-5. Quels défis sont associés à l’extensibilité de votre modèle pour ajouter de nouveaux types de canards ou de nouvelles capacités ?
-
----
-
-## Fonctionnalités Avancées (Optionnelles)
-
-### 1. Gestion Avancée des Combats
-
-- **Effets de Statut :** Implémenter des effets persistants comme "brûlé" (perte de PV à chaque tour), "gelé" (inaptitude à agir pendant 2 tours) ou "paralysé" (capacité d'agir 50% du temps) via une méthode `appliquerEffets()`.
-- **Points d’Énergie (PE) :** Limiter l’utilisation des attaques et capacités spéciales avec une ressource PE (par exemple, attaque = 5 PE, capacité spéciale = 15 PE).
-- **Attaques Critiques :** Ajouter une probabilité (10%) pour infliger des dégâts critiques (2x les dégâts).
-
-### 2. Types et Interactions Supplémentaires
-
-- **Nouveaux Types de Canards :**
-  - **Canard Électrique** : Neutralise les faiblesses (ignore les multiplicateurs de type lors d’une attaque).
-  - **Canard Toxique** : Inflige un poison qui diminue les PV de l’adversaire de 5 PV par tour pendant 3 tours.
-  - **Canard Sol** : Résistant aux attaques Électriques et Feu, mais faible face aux attaques Eau.
-
-### 3. Personnalisation et Progression
-
-- **Création Personnalisée :** Permettre au joueur de personnaliser le nom, le type, les PV et les PA du canard dans des limites prédéfinies.
-- **Évolution :** Offrir la possibilité à un canard de gagner des statistiques ou de débloquer de nouvelles capacités après une victoire.
-- **Objets Utilisables :** Intégrer des objets (comme des potions) pour restaurer les PV ou les PE.
+- **Langage** : Java  
+- **Paradigme utilisé** : Programmation orientée objet (POO)  
+- **Types élémentaires** : Gérés par un `enum` `TypeCanard`  
+- **Polymorphisme** : La méthode `activerCapaciteSpeciale(Canard cible)` est définie abstraitement dans `Canard` et redéfinie dans chaque sous-classe.  
+- **Attaques** : La méthode `attaquer()` applique les multiplicateurs de type, le coût en PE, et la probabilité de coup critique.  
+- **Effets spéciaux** : Brûlure, gel, et bonus d’attaque sont codés dans les sous-classes, sous forme d’attributs booléens ou multiplicateurs.  
+- **Interface utilisateur** : Le programme fonctionne via une boucle console interactive simple.  
+- **Extensibilité** : Limitée à ce stade, car les effets et types sont intégrés directement dans les sous-classes. Une refactorisation orientée "comportements objets" (capacité, effet) serait plus évolutive.
 
 ---
 
-## Livrables Attendus
+## Structure du projet
 
-1. **Code Source :**
-   - Organisation claire avec des classes séparées et documentées (JavaDoc).
-   - Utilisation de commits réguliers et normalisés dans le dépôt.
-
-2. **README.md :**
-   - Contient un diagramme UML des classes et une description des choix techniques.
-   - Liste des réalisations bonus le cas échéant.
-
-3. **Fichier HELPERS :**
-   - Liste des personnes ayant apporté leur aide sur le projet, afin de reconnaître leur contribution.
+    src/
+    ├── Canard.java                → Classe abstraite principale
+    ├── CanardEau.java             → Sous-classe Eau
+    ├── CanardFeu.java             → Sous-classe Feu
+    ├── CanardGlace.java           → Sous-classe Glace
+    ├── CanardVent.java            → Sous-classe Vent
+    ├── TypeCanard.java            → Enum des types + gestion des multiplicateurs
+    ├── Main.java                  → Interface console et logique de combat
 
 ---
 
-## Exemple de Départ : Classe Main 
+## Lancement du programme
 
-```java
-import java.util.Scanner;
+1. Compiler tous les fichiers depuis le terminal :
 
-public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Bienvenue dans Canard Fighter Simulator !");
-        System.out.println("1. Créer un canard");
-        System.out.println("2. Lancer une bataille");
-        System.out.println("3. Quitter");
-        scanner.close();
-    }
-}
+       javac *.java
+
+2. Exécuter le programme :
+
+       java Main
+
+--- 
+
+## Auteurs : 
+
+- Clément SALVADOR
+- Guillaume POMIÈS
