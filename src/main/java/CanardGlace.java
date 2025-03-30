@@ -41,6 +41,7 @@ public class CanardGlace extends Canard {
      */
     public boolean estCibleGelee(Canard cible) {
         if (cibleGelee == cible) {
+            cible.subirDegats(10);
             cibleGelee = null;
             return true;
         }
