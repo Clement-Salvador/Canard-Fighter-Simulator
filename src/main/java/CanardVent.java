@@ -23,7 +23,7 @@ public class CanardVent extends Canard {
      * Augmente la puissance d'attaque temporairement.
      */
     @Override
-    public void activerCapaciteSpeciale() {
+    public void activerCapaciteSpeciale(Canard cible) {
         if (!isCapaciteSpecialeUtilisee()) {
             multiplicateur = 2;
             System.out.println(getNom() + " se prépare avec Rafale ! Attaque x2 !");
@@ -32,7 +32,6 @@ public class CanardVent extends Canard {
             System.out.println(getNom() + " a déjà utilisé sa capacité spéciale !");
         }
     }
-
     /**
      * Redéfinition de la méthode attaquer pour prendre en compte le bonus
      * temporaire.
