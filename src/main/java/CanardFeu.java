@@ -24,16 +24,15 @@ public class CanardFeu extends Canard {
      * Inflige des dégâts immédiats et applique un effet de brûlure pour un tour.
      */
     @Override
-    public void activerCapaciteSpeciale() {
+    public void activerCapaciteSpeciale(Canard cible) {
         if (!isCapaciteSpecialeUtilisee()) {
-            System.out.println(getNom() + " applique brûlure !");
+            System.out.println(getNom() + " applique brûlure à " + cible.getNom() + " !");
             brulureActive = true;
             markCapaciteSpecialeAsUsed();
         } else {
             System.out.println(getNom() + " a déjà utilisé sa capacité spéciale !");
         }
     }
-
     /**
      * Applique l'effet de brûlure si actif, inflige 10 dégâts au canard ciblé.
      * 
