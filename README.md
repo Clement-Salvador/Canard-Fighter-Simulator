@@ -72,6 +72,11 @@ Cela éviterait une explosion du nombre de classes ou de conditions.
     ├── Main.java                  → Interface console et logique de combat
 
 ---
+## Diagramme UML du projet
+
+![Diagramme_Uml](TypeCanard.png)
+
+---
 
 ## Lancement du programme
 
