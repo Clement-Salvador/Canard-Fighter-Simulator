@@ -56,14 +56,14 @@ public class CanardTest {
     // ------------------------------------------
     @Test
     public void testCapaciteSpecialeCanardEau() {
-        canardEau.activerCapaciteSpeciale(); // +20 PV
+        canardEau.activerCapaciteSpeciale(canardEau); // +20 PV
         assertEquals(120, canardEau.getPointsDeVie());
         assertTrue(canardEau.isCapaciteSpecialeUtilisee());
     }
 
     @Test
     public void testCapaciteSpecialeCanardFeu() {
-        canardFeu.activerCapaciteSpeciale(); // Active la brûlure
+        canardFeu.activerCapaciteSpeciale(canardEau); // Active la brûlure
         canardFeu.attaquer(canardEau); // Applique la brûlure
         assertEquals(80, canardEau.getPointsDeVie()); // 100 - (20 * 1.0) = 80
     }
