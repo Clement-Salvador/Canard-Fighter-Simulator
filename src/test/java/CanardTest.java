@@ -83,4 +83,22 @@ public class CanardTest {
         canardGlace.attaquer(canardFeu); // Glace > Feu (x0.5)
         assertEquals(90, canardFeu.getPointsDeVie()); // 100 - (20 * 0.5) = 90
     }
+    // ------------------------------------------
+    // Test pour les PE insuffisants
+    // ------------------------------------------
+    @Test
+    public void testAttaquer_PEInsuffisants() {
+        // Given
+        canardEau.setPointsEnergie(3); // PE insuffisants
+
+        // When
+        canardEau.attaquer(canardFeu);
+
+        // Then
+        assertEquals(3, canardEau.getPointsEnergie()); // PE non consommés
+        assertEquals(100, canardFeu.getPointsDeVie()); // PV intacts
+    }
+
+
+    
 }
